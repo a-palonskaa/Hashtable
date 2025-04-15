@@ -21,7 +21,7 @@ SOURCES = main.cpp backet.cpp hash.cpp hashtable.cpp parse_text.cpp
 OBJECTS = $(addprefix $(BUILD_DIR)/src/, $(SOURCES:%.cpp=%.o))
 DEPS = $(OBJECTS:%.o=%.d)
 
-EXECUTABLE = build/diff
+EXECUTABLE = build/hash
 CFLAGS += $(addprefix -I, $(INCLUDES))
 LDFLAGS = -L$(LIBS_DIR) -lcommon
 

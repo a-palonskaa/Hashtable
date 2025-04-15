@@ -37,45 +37,40 @@ typedef enum {
     IMAGE_CREATION_ERROR = 2,
 } error_t;
 
-class backet_t {
-public:
-	backet_t() = default;
-    ~backet_t() = default;
-
-	list_status_t ctor();
-	void dtor();
-
-	node_t* get_head();
-	node_t* get_tail();
-
-	list_status_t insert_after(size_t anchor, elem_t elem);
-	list_status_t insert_before(size_t anchor, elem_t elem);
-	list_status_t delete_at(size_t anchor);
-
-	list_status_t push_front(elem_t elem);
-	list_status_t push_back(elem_t elem);
-	list_status_t pop_front();
-
-	elem_t front();
-	elem_t back();
-
-	elem_t previous_elem(size_t pos);
-	elem_t next_elem(size_t pos);
-
-	size_t get_size();
-	size_t is_empy();
-
-	ssize_t find_elem_by_value(uint64_t hash);
-	ssize_t find_elem_by_index(size_t index);
-	ssize_t add_counter_to_index(size_t index);
-	void print_info_about_elem(size_t index);
-	void add_elem_to_backet(const char* word, size_t len, uint64_t hash);
-private:
-	node_t* get_anchor_node(size_t anchor);
-	node_t* new_node();
-
+typedef struct {
 	node_t* tail;
 	size_t size;
-};
+} backet_t;
+
+
+list_status_t ctor(backet_t* backet);
+void dtor(backet_t* backet);
+
+node_t* get_head(backet_t* backet);
+
+list_status_t insert_after(backet_t* backet, size_t anchor, elem_t elem);
+list_status_t insert_before(backet_t* backet, size_t anchor, elem_t elem);
+list_status_t delete_at(backet_t* backet, size_t anchor);
+
+list_status_t push_front(backet_t* backet, elem_t elem);
+list_status_t push_back(backet_t* backet, elem_t elem);
+list_status_t pop_front(backet_t* backet);
+
+elem_t front(backet_t* backet);
+elem_t back(backet_t* backet);
+
+elem_t previous_elem(backet_t* backet, size_t pos);
+elem_t next_elem(backet_t* backet, size_t pos);
+
+size_t is_empy(backet_t* backet);
+
+ssize_t find_elem_by_value(backet_t* backet, uint64_t hash);
+ssize_t find_elem_by_index(backet_t* backet, size_t index);
+ssize_t add_counter_to_index(backet_t* backet, size_t index);
+void print_info_about_elem(backet_t* backet, size_t index);
+void add_elem_to_backet(backet_t* backet, const char* word, size_t len, uint64_t hash);
+
+node_t* get_anchor_node(backet_t* backet, size_t anchor);
+node_t* new_node(backet_t* backet);
 
 #endif /* LIST_H */

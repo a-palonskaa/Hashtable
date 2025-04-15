@@ -10,6 +10,7 @@
 const char* LOGGER_FILE = "logs/logger_ptrs.html";
 const char* TEXT_FILE = "meow.txt";
 const char* WORDS_FILE = "words.txt";
+const size_t HASHTABLE_SIZE = 600;
 
 int main() {
     FILE* ostream = fopen(LOGGER_FILE, "wb");
@@ -23,40 +24,52 @@ int main() {
     FILE* istream = fopen(TEXT_FILE, "r");
     if (istream == nullptr) {
         LOG(ERROR, "Failed to open text file");
+        return EXIT_FAILURE;
     }
     parse_text(istream, &text);
-
-
 
     text_t words_to_find = {};
     FILE* words_to_find_istream = fopen(WORDS_FILE, "r");
     if (istream == nullptr) {
         LOG(ERROR, "Failed to open text file");
+        free(text.buffer);
+        free(text.text);
+        return EXIT_FAILURE;
     }
     parse_text(words_to_find_istream, &words_to_find);
 
-    hashtable_t hashtable{};
-    hashtable.hashtable_ctor(600);
+    hashtable_t hashtable = {};
+    hashtable_ctor(&hashtable, HASHTABLE_SIZE);
 
     for (size_t i = 0; i < text.size; i++) {
-        hashtable.add_elem(text.text[i].word, text.text[i].len);
+        add_elem(&hashtable, text.text[i].word, text.text[i].len);
     }
 
-    printf("av backet size is %f\n", hashtable.find_avarage_size());
+    printf("av backet size is %f\n", find_avarage_size(&hashtable));
 
     for (size_t i = 0; i < words_to_find.size; i++) {
-        hashtable.is_elem_present(words_to_find.text[i].word, words_to_find.text[i].len); // LINK -  into struct
+        is_elem_present(&hashtable, words_to_find.text[i]);
     }
 
-    hashtable.hashtable_dtor();
+    hashtable_dtor(&hashtable);
+
     free(text.buffer);
     free(text.text);
 
     free(words_to_find.buffer);
     free(words_to_find.text);
 
-    fclose(istream);
-    fclose(ostream);
+    if (fclose(istream) == EOF) {
+        LOG(ERROR, "Failed to close file\n" STRERROR(errno));
+    }
+
+    if (fclose(words_to_find_istream) == EOF) {
+        LOG(ERROR, "Failed to close file\n" STRERROR(errno));
+    }
+
+    if (fclose(ostream) == EOF) {
+        fprintf(stderr, "Failed to close file\n" STRERROR(errno));
+    }
 }
 
 
