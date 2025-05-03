@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
+#include <cstdint>
 #include "parse_text.h"
 #include "logger.h"
 

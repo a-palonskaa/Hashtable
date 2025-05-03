@@ -8,9 +8,9 @@
 #include "parse_text.h"
 
 const char* LOGGER_FILE = "logs/logger_ptrs.html";
-const char* TEXT_FILE = "meow.txt";
-const char* WORDS_FILE = "words.txt";
-const size_t HASHTABLE_SIZE = 600;
+const char* TEXT_FILE = "data/meow.txt";
+const char* WORDS_FILE = "data/words.txt";
+const size_t HASHTABLE_SIZE = 600;             // load factor = 19
 
 int main() {
     FILE* ostream = fopen(LOGGER_FILE, "wb");
@@ -42,10 +42,10 @@ int main() {
     hashtable_ctor(&hashtable, HASHTABLE_SIZE);
 
     for (size_t i = 0; i < text.size; i++) {
-        add_elem(&hashtable, text.text[i].word, text.text[i].len);
+        add_elem(&hashtable, text.text[i]);
     }
 
-    printf("av backet size is %f\n", find_avarage_size(&hashtable));
+    printf("Average bucket size is %f\n", find_avarage_size(&hashtable));
 
     for (size_t i = 0; i < words_to_find.size; i++) {
         is_elem_present(&hashtable, words_to_find.text[i]);

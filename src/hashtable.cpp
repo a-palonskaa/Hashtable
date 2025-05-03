@@ -1,11 +1,11 @@
 #include <assert.h>
 #include "logger.h"
 #include "hashtable.h"
-#include "backet.h"
+#include "bucket.h"
 
-list_status_t hashtable_ctor(hashtable_t* hashtable, size_t size) {
+bucket_status_t hashtable_ctor(hashtable_t* hashtable, size_t size) {
     assert(hashtable != nullptr);
-    hashtable->hasht = (backet_t*) calloc(size, sizeof(backet_t));
+    hashtable->hasht = (bucket_t*) calloc(size, sizeof(bucket_t));
     if (hashtable->hasht == nullptr) {
         LOG(ERROR, "Failed to allocate memoyr");
         hashtable->hashtable_size = 0;
@@ -17,6 +17,7 @@ list_status_t hashtable_ctor(hashtable_t* hashtable, size_t size) {
 
 void hashtable_dtor(hashtable_t* hashtable) {
     if (hashtable == nullptr) return;
+
     for (size_t i = 0; i < hashtable->hashtable_size; i++) {
         dtor(&(hashtable->hasht[i]));
     }
@@ -26,29 +27,31 @@ void hashtable_dtor(hashtable_t* hashtable) {
     hashtable->hashtable_size = 0;
 }
 
-void add_elem(hashtable_t* hashtable, const char* word, size_t len) {
+void add_elem(hashtable_t* hashtable, word_t word) {
     assert(hashtable != nullptr);
-    assert(word != nullptr);
-    uint64_t word_hash = hash(word, len);
-    add_elem_to_backet(&(hashtable->hasht[word_hash % hashtable->hashtable_size]), word, len, word_hash);
+    assert(word.word != nullptr);
+
+    uint64_t word_hash = hash(word);
+    add_elem_to_bucket(&(hashtable->hasht[word_hash % hashtable->hashtable_size]), word, word_hash);
 }
 
-bool find_elem(hashtable_t* hashtable, const char* word, size_t len) {
+size_t find_elem(const hashtable_t* hashtable, word_t word) {
     assert(hashtable != nullptr);
-    assert(word != nullptr);
-    uint64_t word_hash = hash(word, len);
+    assert(word.word != nullptr);
 
-    ssize_t index = find_elem_by_value(&(hashtable->hasht[word_hash % hashtable->hashtable_size]), word_hash);
-    return (index == -1) ? false : true;
+    uint64_t word_hash = hash(word);
+
+    return find_elem_by_value(&(hashtable->hasht[word_hash % hashtable->hashtable_size]), word_hash);
 }
 
-void print_info_about_elem(hashtable_t* hashtable, const char* word, size_t len) {
+void print_info_about_elem(const hashtable_t* hashtable, word_t word) {
     assert(hashtable != nullptr);
-    assert(word != nullptr);
-    uint64_t word_hash = hash(word, len);
+    assert(word.word != nullptr);
 
-    ssize_t index = find_elem_by_value(&(hashtable->hasht[word_hash % hashtable->hashtable_size]), word_hash);
-    if (index == -1) {
+    uint64_t word_hash = hash(word);
+
+    size_t index = find_elem_by_value(&(hashtable->hasht[word_hash % hashtable->hashtable_size]), word_hash);
+    if (index == 0) {
         printf("No elem was found\n");
     }
     else {
@@ -56,25 +59,21 @@ void print_info_about_elem(hashtable_t* hashtable, const char* word, size_t len)
     }
 }
 
-ssize_t is_elem_present(hashtable_t* hashtable, word_t word) {
+size_t is_elem_present(const hashtable_t* hashtable, word_t word) {
     assert(hashtable != nullptr);
     assert(word.word != nullptr);
-    uint64_t word_hash = hash(word.word, word.len);
 
-    ssize_t index = find_elem_by_value(&(hashtable->hasht[word_hash % hashtable->hashtable_size]), word_hash);
-    if (index == -1) {
-        printf("No\n");
-    }
-    return index;
+    uint64_t word_hash = hash(word);
+    return find_elem_by_value(&(hashtable->hasht[word_hash % hashtable->hashtable_size]), word_hash);
 }
 
-double find_avarage_size(hashtable_t* hashtable) {
+double find_avarage_size(const hashtable_t* hashtable) {
     assert(hashtable != nullptr);
+
     size_t unique_words = 0;
 
     for (size_t i = 0; i < hashtable->hashtable_size; i++) {
         unique_words += hashtable->hasht[i].size;
     }
-
-    return (double) unique_words / (double) hashtable->hashtable_size;
+    return hashtable->hashtable_size ? ((double) unique_words / (double) hashtable->hashtable_size) : 0;
 }
