@@ -245,10 +245,8 @@ ssize_t find_and_track_elem_by_value(bucket_t* bucket, uint64_t hash) {
 	assert(bucket != nullptr);
 
 	node_t* current_pos = bucket->tail;
-	size_t i = 1;
-    while (current_pos && current_pos->data.hash != hash) {
+    while (current_pos && current_pos->data.hash != hash) {    // NOTE: уебанство с индекксом
         current_pos = current_pos->next;
-        i++;
     }
 	return current_pos ? (ssize_t) current_pos->data.cnt++ : -1;
 }
@@ -275,40 +273,6 @@ ssize_t add_counter_to_index(bucket_t* bucket, size_t index) {
     current->data.cnt++;
 	return 1;
 }
-
-// void add_elem_to_bucket(bucket_t* bucket, word_t word, uint64_t hash) {
-// 	assert(bucket != nullptr);
-// 	assert(word.word != nullptr);
-//
-// 	ssize_t index = find_elem_by_value(bucket, hash);
-// 	if (index != -1) {
-// 		add_counter_to_index(bucket, (size_t) index);
-// 	}
-// 	else {
-// 		push_front(bucket, {{word.word, word.len}, 1, hash});
-// 	}
-// }
-
-//		node_t* next_node = new_node();
-//    	if (next_node == nullptr) {
-//        	LOG(ERROR, "Memory for the cell was not allocated");
-//        	return;
-//    	}
-//
-//    	next_node->data.cnt = 1;
-//    	next_node->data.hash = hash;
-//    	next_node->data.word.word = word.word;
-//    	next_node->data.word.len = word.len;
-//
-//    	next_node->next = bucket->tail;
-//    	next_node->prev = nullptr;
-//
-//    	if (bucket->tail != nullptr) {
-//        	bucket->tail->prev = next_node;
-//    	}
-//
-//    	bucket->tail = next_node;
-//    	bucket->size++;
 
 void add_elem_to_bucket(bucket_t* bucket, word_t word, uint64_t hash) {
 	assert(bucket != nullptr);

@@ -17,23 +17,52 @@ BUILD_DIR = build
 
 INCLUDES = include common/logger
 SOURCES = main.cpp bucket.cpp hash.cpp hashtable.cpp parse_text.cpp
+SOURCES_v2 = main.cpp list.cpp hash.cpp hashtable.cpp parse_text.cpp
+SOURCES_tests = gtests.cpp list.cpp hash.cpp hashtable.cpp parse_text.cpp
+
 OBJECTS = $(addprefix $(BUILD_DIR)/src/, $(SOURCES:%.cpp=%.o))
+OBJECTS_v2 = $(addprefix $(BUILD_DIR)/src_v2/, $(SOURCES_v2:%.cpp=%.o))
+OBJECTS_tests = $(addprefix $(BUILD_DIR)/src_v2/, $(SOURCES_tests:%.cpp=%.o))
+
 DEPS = $(OBJECTS:%.o=%.d)
+DEPS_v2 = $(OBJECTS_v2:%.o=%.d)
+DEPC_tests = $(OBJECTS_tests:%.o=%.d)
 
 EXECUTABLE = build/hasht
-CFLAGS += $(addprefix -I, $(INCLUDES))
-LDFLAGS = -L$(LIBS_DIR) -lcommon
+EXECUTABLE_v2 = build/hashtv2
+EXECUTABLE_tests = build/gtests
+
+CFLAGS += $(addprefix -I, $(INCLUDES))  -I/usr/include/gtes
+LDFLAGS = -L$(LIBS_DIR) -lcommon -lgtest -lgtest_main -pthread
 
 .PHONY: all libs hasht clean
 
-all: hasht
+all: hasht hashtv2
 
 hasht: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	@$(CC) $^ $(LDFLAGS) -o $@
 
+$(OBJECTS_v2): $(BUILD_DIR)/%.o:%.cpp
+	@mkdir -p $(@D)
+	@$(CC) $(CFLAGS) -MP -MMD -c $< -o $@
+
 $(OBJECTS): $(BUILD_DIR)/%.o:%.cpp
+	@mkdir -p $(@D)
+	@$(CC) $(CFLAGS) -MP -MMD -c $< -o $@
+
+hashtv2: $(EXECUTABLE_v2)
+
+$(EXECUTABLE_v2): $(OBJECTS_v2)
+	@$(CC) $^ $(LDFLAGS) -o $@
+
+tests: $(EXECUTABLE_tests)
+
+$(EXECUTABLE_tests): $(OBJECTS_tests)
+	@$(CC) $^ $(LDFLAGS) -o $@
+
+$(OBJECTS_tests): $(BUILD_DIR)/%.o:%.cpp
 	@mkdir -p $(@D)
 	@$(CC) $(CFLAGS) -MP -MMD -c $< -o $@
 
@@ -49,7 +78,7 @@ clean:
 	@rm -f $(OBJECTS) $(EXECUTABLE)
 
 echo:
-	echo $(OBJECTS)
+	echo $(OBJECTS_v2)
 
 asm:
 	@mkdir -p $(BUILD_DIR)/asm

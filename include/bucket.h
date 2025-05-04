@@ -1,5 +1,5 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef BUCKET_H
+#define BUCKET_H
 
 #include <stdio.h>
 #include <cstdint>
@@ -63,4 +63,4 @@ ssize_t find_elem_by_index(bucket_t* bucket, size_t index);
 ssize_t add_counter_to_index(bucket_t* bucket, size_t index);
 void print_info_about_elem(bucket_t* bucket, size_t index);
 
-#endif /* LIST_H */
+#endif /* BUCKET_H */
